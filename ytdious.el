@@ -74,7 +74,7 @@
 (defvar ytdious-date-options (ring-convert-sequence-to-ring '(hour today week month year all))
   "Availible date options.")
 
-(defvar ytdious-invidious-api-url "https://invidio.us"
+(defvar ytdious-invidious-api-url "https://invidio.us" ;Choose a working instance
   "Url to an Invidious instance.")
 
 (defvar ytdious-invidious-default-query-fields "author,lengthSeconds,title,videoId,authorId,viewCount,published"
@@ -147,6 +147,7 @@ too long).")
     (define-key map "S" #'ytdious-search-recent)
     (define-key map "c" #'ytdious-view-channel)
     (define-key map "C" #'ytdious-view-channel-at-point)
+    (define-key map "w" #'ytdious-copy-url-at-point)
     (define-key map ">" #'ytdious-search-next-page)
     (define-key map "<" #'ytdious-search-previous-page)
     (define-key map (kbd "RET") #'ytdious-play)
@@ -234,7 +235,7 @@ Key bindings:
 		   (concat ytdious-invidious-api-url "/watch?v=" id))))
 
 (defun ytdious-show-image-asyncron ()
-    "Display Thumbnail and Titel of video on point."
+    "Display Thumbnail and Title of video on point."
     (interactive)
     (if-let ((video (ytdious-get-current-video))
 	     (id    (ytdious-video-id-fun video))
@@ -259,7 +260,7 @@ Argument TITLE video title."
       (kill-buffer buffer)
       (let* ((inhibit-read-only t))
 	(with-current-buffer popup-buffer
-			     (kill-region (point-min) (point-max))
+			     (delete-region (point-min) (point-max))
 			     (insert (format "\n%s\n\n" title))
 			     (insert-image image)
 			     (help-mode)))
@@ -277,6 +278,14 @@ Argument TITLE video title."
   (interactive)
   (forward-line -1)
   (ytdious-show-image-asyncron))
+
+(defun ytdious-copy-url-at-point ()
+  "Copy video url at point."
+  (interactive)
+  (let* ((id (tabulated-list-get-id))
+         (url (concat ytdious-invidious-api-url "/watch?v=" id)))
+    (kill-new url)
+    (message url)))
 
 (defun ytdious-quit ()
   "Quit ytdious buffer."
