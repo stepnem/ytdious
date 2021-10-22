@@ -27,6 +27,7 @@ Once everything is loaded `M-x ytdious` creates a new buffer and puts it in `ytd
 | <key>S</key>        | `ytdious-search-recent`         |
 | <key>c</key>        | `ytdious-view-channel`          |
 | <key>C</key>        | `ytdious-view-channel-at-point` |
+| <key>w</key>        | `ytdious-copy-url-at-point`     |
 | <key>></key>        | `ytdious-search-next-page`      |
 | <key><</key>        | `ytdious-search-previous-page`  |
 | <key>RET</key>      | `ytdious-play`                  |
@@ -44,26 +45,7 @@ Emacs date:today
 
 mark a line and start ytdious-region-search on them, so that you don't have to remember and don't have to manually input all your searches. Also you can keep open 1 buffer per search and operate them in parralel.
 
-You can implement a function to stream a video in `mpv` (provided you have `youtube-dl` installed) as follows:
-```elisp
-(defun ytdious-watch ()
-    "Stream video at point in mpv."
-    (interactive)
-    (let* ((video (ytdious-get-current-video))
-     	   (id    (ytdious-video-id-fun video)))
-      (start-process "ytdious mpv" nil
-		     "mpv"
-		     (concat "https://www.youtube.com/watch?v=" id))
-		     "--ytdl-format=bestvideo[height<=?720]+bestaudio/best")
-      (message "Starting streaming..."))
-```
-
-And bind it to a key in `ytdious-mode` with
-```elisp
-(define-key ytdious-mode-map "y" #'ytdious-watch)
-```
-
-This is of course just an example. You can similarly implement functions to:
+Moreover, You can implement functions to:
 - open a video in the browser,
 - download a video,
 - download just the audio of a video,
