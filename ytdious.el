@@ -94,13 +94,13 @@ See `format-time-string' for information on how to edit this variable.")
   "Criterion to date limit the results of the search query.")
 
 (defvar-local ytdious-current-page 1
-  "Current page of the current `ytdious-search-term'")
+  "Current page of the current `ytdious-search-term'.")
 
 (defvar-local ytdious-search-term ""
-  "Current search string as used by `ytdious-search'")
+  "Current search string as used by `ytdious-search'.")
 
 (defvar-local ytdious-channel ""
-  "Current channel as used by `ytdious-search'")
+  "Current channel as used by `ytdious-search'.")
 
 (defvar ytdious-author-name-reserved-space 20
   "Number of characters reserved for the channel's name in the *ytdious* buffer.
