@@ -58,12 +58,6 @@
 (defvar-local ytdious-sort-reverse nil
   "Toggle for sorting videos descending/ascending.")
 
-(defvar ytdious-timer nil
-  "Timer object used by `ytdious-play-continious'.")
-
-(defvar ytdious-timer-buffer nil
-  "Timer buffer object used by `ytdious-play-continious'.")
-
 (defvar ytdious-player-external t
   "Whether to use an external player.")
 
@@ -156,8 +150,6 @@ names that are too long).")
     (define-key map ">" #'ytdious-search-next-page)
     (define-key map "<" #'ytdious-search-previous-page)
     (define-key map (kbd "RET") #'ytdious-play)
-    (define-key map [(control return)] #'ytdious-play-continious)
-    (define-key map [(control escape)] #'ytdious-stop-continious)
     (define-key map [remap next-line] #'ytdious-next-line)
     (define-key map [remap previous-line] #'ytdious-previous-line)
     map)
@@ -175,24 +167,6 @@ Key bindings:
   (interactive)
   (if ytdious-player-external (ytdious-play-external)))
 
-(defun ytdious-play-continious ()
-  "Play videos continiously from point."
-  (interactive)
-  (message "starting continious playback")
-  (when ytdious-timer
-    (cancel-timer ytdious-timer))
-  (let* ((process "ytdious player"))
-    (when (processp process)
-      (kill-process process)))
-  (setq ytdious-timer-buffer (current-buffer))
-  (if ytdious-player-external
-      (progn (ytdious-play-external)
-             (setq ytdious-timer
-                   (run-with-timer 5 1 'ytdious--tick-continious-player)))
-    (ytdious-play-emms)
-    (setq ytdious-timer
-          (run-with-timer 7 7 'ytdious--tick-continious-player))))
-
 (defun ytdious-toggle-sort-direction ()
   "Toggle sorting of the video list."
   (interactive)
@@ -202,31 +176,9 @@ Key bindings:
   (let ((ytdious-skip-request t))       ; FIXME
     (ytdious--draw-buffer nil)))
 
-(defun ytdious-stop-continious ()
-  "Stop continious player."
-  (interactive)
-  (cancel-timer ytdious-timer)
-  (message "continious playback stopped"))
-
 (defun ytdious-pos-last-line-p ()
   "Check if cursor is in last empty line."
   (> (line-number-at-pos) (length ytdious-videos)))
-
-(defvar emms-player-playing-p)
-(defun ytdious--tick-continious-player ()
-  "Keep continious player running till end is reached."
-  (let* ((end-reached (or (and ytdious-player-external
-                               (not (process-status "ytdious player")))
-                          (and (not ytdious-player-external)
-                               (not emms-player-playing-p)))))
-    (when end-reached
-      (with-current-buffer ytdious-timer-buffer
-        (ytdious-next-line)
-        (if (ytdious-pos-last-line-p)
-            (ytdious-stop-continious)
-          (if ytdious-player-external
-              (ytdious-play-external)
-            (ytdious-play-emms)))))))
 
 (declare-function emms-play-url "emms-source-file")
 (defun ytdious-play-emms ()
