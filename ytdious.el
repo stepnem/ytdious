@@ -58,15 +58,11 @@
 (defvar-local ytdious-sort-reverse nil
   "Toggle for sorting videos descending/ascending.")
 
-(defvar ytdious-player-external t
-  "Whether to use an external player.")
+(defvar ytdious-player-program "mpv"
+  "Program for playing videos.")
 
-(defvar ytdious-player-external-command "mpv"
-  "Command for external player.")
-
-(defvar ytdious-player-external-options
-  "--ytdl-format=bestvideo[height<=?1080]+bestaudio/best"
-  "Options for external player.")
+(defvar ytdious-player-options '("--really-quiet")
+  "List of options for `ytdious-player-program'.")
 
 (defvar ytdious-date-options (ring-convert-sequence-to-ring
                               '(hour today week month year all))
@@ -161,11 +157,6 @@ Key bindings:
   (setq-local split-height-threshold 22)
   (setq-local revert-buffer-function #'ytdious--draw-buffer))
 
-(defun ytdious-play ()
-  "Play video at point."
-  (interactive)
-  (if ytdious-player-external (ytdious-play-external)))
-
 (defun ytdious-toggle-sort-direction ()
   "Toggle sorting of the video list."
   (interactive)
@@ -186,15 +177,15 @@ Key bindings:
                          "/watch?v="
                          (tabulated-list-get-id))))
 
-(defun ytdious-play-external ()
-  "Play video at point in external player."
+(defun ytdious-play ()
+  "Play video at point."
   (interactive)
-  (start-process "ytdious player" "ytdious player"
-                 ytdious-player-external-command
-                 ytdious-player-external-options
-                 (concat ytdious-invidious-api-url
-                         "/watch?v="
-                         (tabulated-list-get-id))))
+  (apply #'start-process "ytdious player" " *ytdious player*"
+         ytdious-player-program
+         `(,@ytdious-player-options
+           ,(concat ytdious-invidious-api-url
+                    "/watch?v="
+                    (tabulated-list-get-id)))))
 
 (defun ytdious-copy-url-at-point ()
   "Copy video URL at point to `kill-ring' and system clipboard.
