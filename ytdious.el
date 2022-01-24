@@ -134,7 +134,6 @@ names that are too long).")
 (defvar ytdious-mode-map
   (let ((map (make-sparse-keymap)))
     (suppress-keymap map)
-    (define-key map "h" #'describe-mode)
     (define-key map "d" #'ytdious-rotate-date)
     (define-key map "D" #'ytdious-rotate-date-backwards)
     (define-key map "r" #'ytdious-rotate-sort)
