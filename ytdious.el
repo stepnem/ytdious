@@ -197,13 +197,15 @@ Key bindings:
                          (tabulated-list-get-id))))
 
 (defun ytdious-copy-url-at-point ()
-  "Copy video URL at point."
+  "Copy video URL at point to `kill-ring' and system clipboard.
+The URL is also displayed in the echo area."
   (interactive)
   (let ((url (concat ytdious-invidious-api-url
                      "/watch?v="
                      (tabulated-list-get-id))))
+    (gui-set-selection 'CLIPBOARD url)
     (kill-new url)
-    (message url)))
+    (message "%s" url)))
 
 (defun ytdious--format-author (name)
   "Format a channel NAME to be inserted in the *ytdious* buffer."
