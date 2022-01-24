@@ -443,9 +443,12 @@ the channel which video you want to see."
                     (when ucid (format "/%s%s" ucid "?sort_by=newest"))
                     (when args (concat "?" (url-build-query-string args)))))))
       (unless (= exit-code 0)
-        (error "Curl had problems connecting to Invidious"))
+        (error "Curl exited with code %d when querying Invidious" exit-code))
       (goto-char (point-min))
-      (json-read))))
+      (condition-case c
+          (json-read)
+        (t (error
+            "`json-read' error when parsing data from Invidious: %S" c))))))
 
 (provide 'ytdious)
 ;;; ytdious.el ends here
