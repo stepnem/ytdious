@@ -23,7 +23,7 @@
 ;; Keywords: youtube matching multimedia
 ;; URL: https://github.com/spiderbit/ytdious
 ;; License: GNU General Public License >= 3
-;; Package-Requires: ((emacs "25.3"))
+;; Package-Requires: ((emacs "27.1"))
 
 ;;; Commentary:
 
