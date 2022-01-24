@@ -30,14 +30,14 @@
 ;; This package provide a major mode to search YouTube videos via a
 ;; tabulated list and allows to open multiple search buffers at the
 ;; same time, it comes with features like thumbnail pictures and
-;; sorting / limiting by time periods.  Visit Readme for more
+;; sorting / limiting by time periods.  Visit README for more
 ;; information.
 ;;
 ;; ytdious is based/forked on/from ytel but ads some nice features to
-;; make it more usable for browsing and binch watching.  (more here:
+;; make it more usable for browsing and binge watching.  (more here:
 ;; https://github.com/gRastello/ytel).
 ;;
-;; ytdious works by querying YouTube via the Invidious apis (learn
+;; ytdious works by querying YouTube via the Invidious APIs (learn
 ;; more on that here: https://github.com/omarroth/invidious).
 
 ;;; Code:
@@ -48,12 +48,12 @@
 (require 'ring)
 
 (defgroup ytdious ()
-  "An Emacs Youtube \"front-end\"."
+  "An Emacs YouTube \"front-end\"."
   :group 'comm)
 
 (defvar ytdious-sort-options (ring-convert-sequence-to-ring
                               '(relevance rating upload_date view_count))
-  "Availible sort options.")
+  "Available sort options.")
 
 (defvar-local ytdious-sort-reverse nil
   "Toggle for sorting videos descending/ascending.")
@@ -76,10 +76,10 @@
 
 (defvar ytdious-date-options (ring-convert-sequence-to-ring
                               '(hour today week month year all))
-  "Availible date options.")
+  "Available date options.")
 
 (defvar ytdious-invidious-api-url "https://invidio.us" ; FIXME
-  "Url to an Invidious instance.")
+  "URL to an Invidious instance.")
 
 (defvar ytdious-invidious-default-query-fields
   "author,lengthSeconds,title,videoId,authorId,viewCount,published"
@@ -194,12 +194,12 @@ Key bindings:
           (run-with-timer 7 7 'ytdious--tick-continious-player))))
 
 (defun ytdious-toggle-sort-direction ()
-  "Toggle the sortation of the video List."
+  "Toggle sorting of the video list."
   (interactive)
   (setq ytdious-sort-reverse
         (not ytdious-sort-reverse))
   (defvar ytdious-skip-request)
-  (let* ((ytdious-skip-request t))
+  (let ((ytdious-skip-request t))       ; FIXME
     (ytdious--draw-buffer nil)))
 
 (defun ytdious-stop-continious ()
@@ -231,17 +231,19 @@ Key bindings:
 (declare-function emms-play-url "emms-source-file")
 (defun ytdious-play-emms ()
   "Play video at point in emms."
-  (let* ((id (tabulated-list-get-id)))
-    (emms-play-url (concat ytdious-invidious-api-url "/watch?v=" id))))
+  (emms-play-url (concat ytdious-invidious-api-url
+                         "/watch?v="
+                         (tabulated-list-get-id))))
 
 (defun ytdious-play-external ()
   "Play video at point in external player."
   (interactive)
-  (let* ((id (tabulated-list-get-id)))
-    (start-process "ytdious player" "ytdious player"
-                   ytdious-player-external-command
-                   ytdious-player-external-options
-                   (concat ytdious-invidious-api-url "/watch?v=" id))))
+  (start-process "ytdious player" "ytdious player"
+                 ytdious-player-external-command
+                 ytdious-player-external-options
+                 (concat ytdious-invidious-api-url
+                         "/watch?v="
+                         (tabulated-list-get-id))))
 
 (defun ytdious-show-image-asyncron ()
   "Display Thumbnail and Title of video on point."
@@ -256,7 +258,7 @@ Key bindings:
 
 (defun ytdious-display-video-detail-popup (_status title)
   "Create or raise popup-buffer with video details.
-Argument _STATUS event lists of http request
+Argument _STATUS event lists of HTTP request
 for further details look at `url-retrieve'.
 Argument TITLE video title."
   (let* ((buffer (current-buffer))
@@ -267,7 +269,7 @@ Argument TITLE video title."
                  (buffer-substring (point) (point-max))))
          (image (create-image data nil t)))
     (kill-buffer buffer)
-    (let* ((inhibit-read-only t))
+    (let ((inhibit-read-only t))
       (with-current-buffer popup-buffer
         (delete-region (point-min) (point-max))
         (insert (format "\n%s\n\n" title))
@@ -289,10 +291,11 @@ Argument TITLE video title."
   (ytdious-show-image-asyncron))
 
 (defun ytdious-copy-url-at-point ()
-  "Copy video url at point."
+  "Copy video URL at point."
   (interactive)
-  (let* ((id (tabulated-list-get-id))
-         (url (concat ytdious-invidious-api-url "/watch?v=" id)))
+  (let ((url (concat ytdious-invidious-api-url
+                     "/watch?v="
+                     (tabulated-list-get-id))))
     (kill-new url)
     (message url)))
 
@@ -339,7 +342,7 @@ Argument TITLE video title."
                 (ytdious--format-video-views
                  (assoc-default 'viewCount video)))))
 
-(defun ytdious--draw-buffer (&optional _arg _noconfirm)
+(defun ytdious--draw-buffer (&optional _arg _noconfirm) ; FIXME
   "Draw a list of videos.
 Optional argument _ARG revert expects this param.
 Optional argument _NOCONFIRM revert expects this param."
@@ -361,7 +364,7 @@ Optional argument _NOCONFIRM revert expects this param."
 	    ("Title" ,ytdious-title-video-reserved-space t)
             ("Views" 10 nil . (:right-align t))])
     (unless (boundp 'ytdious-skip-request)
-      (setf ytdious-videos
+      (setq ytdious-videos
             (funcall
              (if ytdious-channel 'ytdious--query-channel 'ytdious--query)
              title)))
@@ -390,7 +393,7 @@ Optional argument _NOCONFIRM revert expects this param."
     (ytdious-show-image-asyncron)))
 
 (defun ytdious--query (string)
-  "Query youtube for STRING."
+  "Query YouTube for STRING."
   (ytdious--API-call
    "search"
    `(("q" ,string)
@@ -400,86 +403,85 @@ Optional argument _NOCONFIRM revert expects this param."
      ("fields" ,ytdious-invidious-default-query-fields))))
 
 (defun ytdious--query-channel (string)
-  "Show youtube channel STRING."
-  (let ((videos (ytdious--API-call "channels/videos" nil string)))
-    videos))
+  "Show YouTube channel STRING."
+  (ytdious--API-call "channels/videos" nil string))
 
 (defun ytdious-search (query)
-  "Search youtube for `QUERY', and redraw the buffer."
+  "Search YouTube for QUERY, and redraw the buffer."
   (interactive "sSearch terms: ")
-  (setf ytdious-current-page 1)
+  (setq ytdious-current-page 1)
   (let* ((query-words (split-string query))
          (terms (seq-group-by (lambda (elem)
                                 (numberp (string-match-p ":" elem)))
                               query-words)))
-    (setq-local ytdious-search-term
-                (string-join (assoc-default nil terms) " "))
+    (setq ytdious-search-term
+          (string-join (assoc-default nil terms) " "))
     (if-let ((date (seq-find
                     (lambda (s) (string-prefix-p "date:" s) )
                     (assoc-default t terms))))
-        (setf ytdious-date-criterion (intern (substring date 5)))
-      (setf ytdious-date-criterion 'all)))
-  (setf ytdious-channel 'nil)
+        (setq ytdious-date-criterion (intern (substring date 5)))
+      (setq ytdious-date-criterion 'all)))
+  (setq ytdious-channel 'nil)
   (ytdious--draw-buffer))
 
 (defun ytdious-search-recent ()
-  "Start a search youtube with recent search string.
+  "Start a search YouTube with recent search string.
 Mostly this is useful to return from a channel view back to search overview"
   (interactive)
   (ytdious-search
    (read-from-minibuffer "Search terms: " ytdious-search-term)))
 
 (defun ytdious-view-channel (channel)
-  "Open youtube `CHANNEL', and redraw the buffer."
+  "Open YouTube CHANNEL, and redraw the buffer."
   (interactive "sChannel: ")
-  (setf ytdious-current-page 1)
-  (setq-local ytdious-channel channel)
+  (setq ytdious-current-page 1)
+  (setq ytdious-channel channel)
   (ytdious--draw-buffer))
 
 (defun ytdious-view-channel-at-point ()
-  "Open youtube `CHANNEL', and redraw the buffer."
+  "Open YouTube CHANNEL, and redraw the buffer."
   (interactive)
-  (setf ytdious-current-page 1)
-  (setq-local ytdious-channel
-              (assoc-default 'authorId (ytdious-get-current-video)))
+  (setq ytdious-current-page 1)
+  (setq ytdious-channel
+        (assoc-default 'authorId (ytdious-get-current-video)))
   (ytdious--draw-buffer))
 
 (defun ytdious-display-full-title ()
-  "Prints full title in minibuffer."
+  "Print full title in the echo area."
   (interactive)
-  (princ (format "\n%s\n" (assoc-default 'title (ytdious-get-current-video)))))
+  (message "\n%s\n" (assoc-default 'title (ytdious-get-current-video))))
 
 (defun ytdious-rotate-sort (&optional reverse)
-  "Rotates through sort criteria.
+  "Rotate through sort criteria.
 Optional argument REVERSE reverses the direction of the rotation."
   (interactive)
-  (let* ((circle (if reverse 'ring-previous 'ring-next)))
-    (setf ytdious-sort-criterion
-          (funcall circle ytdious-sort-options ytdious-sort-criterion)))
+  (setq ytdious-sort-criterion
+        (funcall (if reverse 'ring-previous 'ring-next)
+                 ytdious-sort-options ytdious-sort-criterion))
   (ytdious--draw-buffer))
 
 (defun ytdious-rotate-sort-backwards ()
-  "Rotates through sorting backwards."
+  "Rotate through sorting backwards."
   (interactive)
   (ytdious-rotate-sort t))
 
 (defun ytdious-rotate-date (&optional reverse)
-  "Rotates through date limit.
+  "Rotate through date limit.
 Optional argument REVERSE reverses the direction of the rotation."
   (interactive)
-  (let* ((circle (if reverse 'ring-previous 'ring-next)))
-    (setf ytdious-date-criterion
-          (funcall circle ytdious-date-options ytdious-date-criterion)))
+  (setq ytdious-date-criterion
+        (funcall (if reverse 'ring-previous 'ring-next)
+                 ytdious-date-options ytdious-date-criterion))
   (ytdious--draw-buffer))
 
 (defun ytdious-rotate-date-backwards ()
-  "Rotates through date limit backwards."
+  "Rotate through date limit backwards."
   (interactive)
   (ytdious-rotate-date t))
 
 ;;;###autoload
 (defun ytdious-region-search ()
-  "Search youtube for marked region."
+  "Search YouTube for marked region."
   (interactive)
   (let* ((query
           (buffer-substring-no-properties
@@ -494,14 +496,14 @@ Optional argument REVERSE reverses the direction of the rotation."
 (defun ytdious-search-next-page ()
   "Switch to the next page of the current search.  Redraw the buffer."
   (interactive)
-  (setf ytdious-current-page (1+ ytdious-current-page))
+  (cl-incf ytdious-current-page)
   (ytdious--draw-buffer))
 
 (defun ytdious-search-previous-page ()
   "Switch to the previous page of the current search.  Redraw the buffer."
   (interactive)
   (when (> ytdious-current-page 1)
-    (setf ytdious-current-page (1- ytdious-current-page))
+    (cl-decf ytdious-current-page)
     (ytdious--draw-buffer)))
 
 (defun ytdious-get-current-video ()
@@ -513,7 +515,7 @@ Optional argument REVERSE reverses the direction of the rotation."
               ytdious-videos)))
 
 (defun ytdious-buffer ()
-  "Name for the main ytdious buffer."
+  "Return the main ytdious buffer."
   (get-buffer-create "*ytdious*"))
 
 ;;;###autoload
@@ -530,7 +532,7 @@ Optional argument REVERSE reverses the direction of the rotation."
   (assoc-default 'videoId video))
 
 (defun ytdious--API-call (method args &optional ucid)
-  "Perform a call to the invidious API method METHOD passing ARGS.
+  "Perform a call to the Invidious API method METHOD passing ARGS.
 Curl is used to perform the request.  An error is thrown if it
 exits with a non zero exit code otherwise the request body is
 parsed by `json-read' and returned.  Optional argument UCID of
