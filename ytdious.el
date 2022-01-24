@@ -134,7 +134,6 @@ names that are too long).")
 (defvar ytdious-mode-map
   (let ((map (make-sparse-keymap)))
     (suppress-keymap map)
-    (define-key map "q" #'ytdious-quit)
     (define-key map "h" #'describe-mode)
     (define-key map "d" #'ytdious-rotate-date)
     (define-key map "D" #'ytdious-rotate-date-backwards)
@@ -150,8 +149,6 @@ names that are too long).")
     (define-key map ">" #'ytdious-search-next-page)
     (define-key map "<" #'ytdious-search-previous-page)
     (define-key map (kbd "RET") #'ytdious-play)
-    (define-key map [remap next-line] #'ytdious-next-line)
-    (define-key map [remap previous-line] #'ytdious-previous-line)
     map)
   "Keymap for `ytdious-mode'.")
 
@@ -197,51 +194,6 @@ Key bindings:
                          "/watch?v="
                          (tabulated-list-get-id))))
 
-(defun ytdious-show-image-asyncron ()
-  "Display Thumbnail and Title of video on point."
-  (interactive)
-  (if-let ((video (ytdious-get-current-video))
-           (id    (ytdious-video-id-fun video))
-           (title (assoc-default 'title video)))
-      (url-retrieve
-       (format "%s/vi/%s/mqdefault.jpg"
-               ytdious-invidious-api-url id)
-       'ytdious-display-video-detail-popup (list title) t)))
-
-(defun ytdious-display-video-detail-popup (_status title)
-  "Create or raise popup-buffer with video details.
-Argument _STATUS event lists of HTTP request
-for further details look at `url-retrieve'.
-Argument TITLE video title."
-  (let* ((buffer (current-buffer))
-         (buf-name "ytdious: Video Details")
-         (popup-buffer (get-buffer-create buf-name))
-         (data (with-current-buffer buffer
-                 (search-forward "\n\n")
-                 (buffer-substring (point) (point-max))))
-         (image (create-image data nil t)))
-    (kill-buffer buffer)
-    (let ((inhibit-read-only t))
-      (with-current-buffer popup-buffer
-        (delete-region (point-min) (point-max))
-        (insert (format "\n%s\n\n" title))
-        (insert-image image)
-        (help-mode)))
-    (unless (get-buffer-window popup-buffer (selected-frame))
-      (display-buffer-pop-up-window popup-buffer nil))))
-
-(defun ytdious-next-line ()
-  "Wrapper for the `next-line' function."
-  (interactive)
-  (forward-line)
-  (ytdious-show-image-asyncron))
-
-(defun ytdious-previous-line ()
-  "Wrapper for the `previous-line' function."
-  (interactive)
-  (forward-line -1)
-  (ytdious-show-image-asyncron))
-
 (defun ytdious-copy-url-at-point ()
   "Copy video URL at point."
   (interactive)
@@ -250,14 +202,6 @@ Argument TITLE video title."
                      (tabulated-list-get-id))))
     (kill-new url)
     (message url)))
-
-(defun ytdious-quit ()
-  "Quit ytdious buffer."
-  (interactive)
-  (if-let ((popup (get-buffer "ytdious: Video Details")))
-      (progn (delete-window (get-buffer-window popup))
-             (kill-buffer popup))
-    (quit-window)))
 
 (defun ytdious--format-author (name)
   "Format a channel NAME to be inserted in the *ytdious* buffer."
@@ -341,8 +285,7 @@ Optional argument _NOCONFIRM revert expects this param."
                   (if ytdious-sort-reverse (reverse ytdious-videos)
                     ytdious-videos)))
     (tabulated-list-init-header)
-    (tabulated-list-print)
-    (ytdious-show-image-asyncron)))
+    (tabulated-list-print)))
 
 (defun ytdious--query (string)
   "Query YouTube for STRING."
