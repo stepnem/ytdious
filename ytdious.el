@@ -72,8 +72,11 @@
                               '(hour today week month year all))
   "Available date options.")
 
-(defvar ytdious-invidious-api-url "https://invidio.us" ; FIXME
-  "URL to an Invidious instance.")
+(defvar ytdious-invidious-api-url "https://invidio.xamh.de"
+  "URL to an Invidious instance (without trailing \"/\").
+The instance must support the Invidious API.  A list of
+available instances can be found at the URL
+`https://api.invidious.io/?sort_by=api'.")
 
 (defvar ytdious-invidious-default-query-fields
   "author,lengthSeconds,title,videoId,authorId,viewCount,published"
