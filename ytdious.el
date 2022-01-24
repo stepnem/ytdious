@@ -19,7 +19,7 @@
 
 ;; Author: Stefan Huchler
 ;;      Gabriele Rastello
-;; Version: 0.1.0
+;; Version: 0.2b
 ;; Keywords: youtube matching multimedia
 ;; URL: https://github.com/spiderbit/ytdious
 ;; License: GNU General Public License >= 3
@@ -205,6 +205,7 @@ Key bindings:
   "Check if cursor is in last empty line."
   (> (line-number-at-pos) (length ytdious-videos)))
 
+(defvar emms-player-playing-p)
 (defun ytdious--tick-continious-player ()
   "Keep continious player running till end is reached."
   (let* ((end-reached (or (and ytdious-player-external
@@ -220,6 +221,7 @@ Key bindings:
 	      (ytdious-play-external)
 	    (ytdious-play-emms)))))))
 
+(declare-function emms-play-url "emms-source-file")
 (defun ytdious-play-emms ()
   "Play video at point in emms."
   (let* ((id (tabulated-list-get-id)))
@@ -300,7 +302,7 @@ Argument TITLE video title."
   (propertize name 'face 'ytdious-channel-name-face))
 
 (defun ytdious--format-video-length (seconds)
-  "Given an amount of SECONDS, format it nicely to be inserted in the *ytdious* buffer."
+  "Format SECONDS to be inserted in the *ytdious* buffer."
   (let ((formatted-string (concat (format-seconds "%.2h" seconds)
 				  ":"
 				  (format-seconds "%.2m" (mod seconds 3600))
