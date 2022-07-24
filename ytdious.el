@@ -18,7 +18,9 @@
 ;; USA
 
 ;; Author: Stefan Huchler
-;;      Gabriele Rastello
+;;         Gabriele Rastello
+;;         Štěpán Němec <stepnem@gmail.com>
+;; Maintainer: Štěpán Němec <stepnem@gmail.com>
 ;; Version: 0.2b
 ;; Keywords: youtube matching multimedia
 ;; URL: https://github.com/spiderbit/ytdious
