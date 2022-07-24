@@ -221,18 +221,6 @@ The URL is also displayed in the echo area."
                                   (seconds-to-time published))
               'face 'ytdious-video-published-face))
 
-(defun ytdious--create-entry (video)
-  "Create tabulated-list VIDEO entry."
-  (list (assoc-default 'videoId video)
-        (vector (ytdious--format-video-published
-                 (assoc-default 'published video))
-                (ytdious--format-author (assoc-default 'author video))
-                (ytdious--format-video-length
-                 (assoc-default 'lengthSeconds video))
-                (assoc-default 'title video)
-                (ytdious--format-video-views
-                 (assoc-default 'viewCount video)))))
-
 (defun ytdious--revert-buffer (_ignore-auto _noconfirm)
   "Revert function for `ytdious-mode' buffers.
 See `revert-buffer' for meaning of IGNORE-AUTO and NOCONFIRM."
@@ -280,9 +268,22 @@ OFFLINE means don't query the API, just redraw the list."
                                       (" date:" ,date-limit)
                                       (" sort:" ,sort-limit)))
     (setq tabulated-list-entries
-          (mapcar #'ytdious--create-entry
-                  (if ytdious-sort-reverse (reverse ytdious-videos)
-                    ytdious-videos)))
+          (cl-loop for video across (if ytdious-sort-reverse
+					(reverse ytdious-videos)
+				      ytdious-videos)
+		   for id = (alist-get 'videoId video)
+		   when id collect
+		   (list id
+			 (vector
+			  (ytdious--format-video-published
+			   (alist-get 'published video))
+			  (ytdious--format-author (alist-get 'author video))
+			  (ytdious--format-video-length
+			   (alist-get 'lengthSeconds video))
+			  (alist-get 'title video)
+			  (ytdious--format-video-views
+			   (alist-get 'viewCount video))))))
+
     (tabulated-list-init-header)
     (tabulated-list-print)))
 
