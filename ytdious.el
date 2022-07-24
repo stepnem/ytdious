@@ -155,16 +155,14 @@ names that are too long).")
 Key bindings:
 \\{ytdious-mode-map}"
   (setq-local split-height-threshold 22)
-  (setq-local revert-buffer-function #'ytdious--draw-buffer))
+  (setq-local revert-buffer-function #'ytdious--revert-buffer))
 
 (defun ytdious-toggle-sort-direction ()
   "Toggle sorting of the video list."
   (interactive)
   (setq ytdious-sort-reverse
         (not ytdious-sort-reverse))
-  (defvar ytdious-skip-request)
-  (let ((ytdious-skip-request t))       ; FIXME
-    (ytdious--draw-buffer nil)))
+  (ytdious--draw-buffer t))
 
 (defun ytdious-pos-last-line-p ()
   "Check if cursor is in last empty line."
@@ -233,10 +231,14 @@ The URL is also displayed in the echo area."
                 (ytdious--format-video-views
                  (assoc-default 'viewCount video)))))
 
-(defun ytdious--draw-buffer (&optional _arg _noconfirm) ; FIXME
+(defun ytdious--revert-buffer (_ignore-auto _noconfirm)
+  "Revert function for `ytdious-mode' buffers.
+See `revert-buffer' for meaning of IGNORE-AUTO and NOCONFIRM."
+  (ytdious--draw-buffer))
+
+(defun ytdious--draw-buffer (&optional offline)
   "Draw a list of videos.
-Optional argument _ARG revert expects this param.
-Optional argument _NOCONFIRM revert expects this param."
+OFFLINE means don't query the API, just redraw the list."
   (interactive)
   (let* ((title (or ytdious-channel ytdious-search-term))
          (page-number (propertize (number-to-string ytdious-current-page)
@@ -254,7 +256,7 @@ Optional argument _NOCONFIRM revert expects this param."
             ("Length" 8 t)
 	    ("Title" ,ytdious-title-video-reserved-space t)
             ("Views" 10 nil . (:right-align t))])
-    (unless (boundp 'ytdious-skip-request)
+    (unless offline
       (setq ytdious-videos
             (funcall
              (if ytdious-channel 'ytdious--query-channel 'ytdious--query)
