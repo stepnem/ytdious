@@ -268,7 +268,7 @@ Optional argument _NOCONFIRM revert expects this param."
                                              (seq-first ytdious-videos)))
                       (list "SRCH" title)))
              'face 'ytdious-video-published-face))
-           (new-buffer-name (format "ytdious %s" title-string)))
+           (new-buffer-name (format "*ytdious %s*" title-string)))
       (if (get-buffer new-buffer-name)
           (switch-to-buffer (get-buffer-create new-buffer-name))
         (rename-buffer new-buffer-name)))
@@ -404,18 +404,41 @@ Optional argument REVERSE reverses the direction of the rotation."
                        (assoc-default 'videoId video)))
               ytdious-videos)))
 
-(defun ytdious-buffer ()
-  "Return the main ytdious buffer."
-  (get-buffer-create "*ytdious*"))
+(defvar ytdious-frame nil)
+(defvar ytdious-enter-buffer-function #'ytdious-pop-up-frame)
+(defun ytdious-pop-up-frame (buffer)
+  "Switch to BUFFER in `ytdious-frame'."
+  (select-frame (if (frame-live-p ytdious-frame)
+                    ytdious-frame
+                  (setq ytdious-frame
+                        (make-frame '((name . "Emacs ytdious")
+                                      (title . "ytdious"))))))
+  (switch-to-buffer buffer)
+  (set-window-dedicated-p nil t))
+
+(defun ytdious-buffer (&optional new)
+  "Return an existing or new (with NEW non-nil) ytdious buffer."
+  (cl-flet ((new-buffer ()
+              (with-current-buffer (generate-new-buffer "*ytdious*")
+                (ytdious-mode)
+                (current-buffer))))
+    (if new (new-buffer)
+      (if-let ((buffers
+		(cl-loop for buffer in (buffer-list)
+                         if (string-prefix-p "*ytdious" (buffer-name buffer))
+                         collect buffer)))
+          (if (cdr buffers)
+              (completing-read "ytdious buffer: " buffers)
+            (car buffers))
+        (new-buffer)))))
 
 ;;;###autoload
-(defun ytdious ()
-  "Enter ytdious."
-  (interactive)
-  (switch-to-buffer (ytdious-buffer))
-  (unless (eq major-mode 'ytdious-mode)
-    (ytdious-mode))
-  (call-interactively #'ytdious-search))
+(defun ytdious (&optional new)
+  "Enter ytdious.
+With NEW (interactively, with a prefix argument), create new ytdious
+buffer even when other exist."
+  (interactive "P")
+  (funcall ytdious-enter-buffer-function (ytdious-buffer new)))
 
 (defun ytdious-video-id-fun (video)
   "Return VIDEO id."
