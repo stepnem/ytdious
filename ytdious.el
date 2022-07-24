@@ -256,8 +256,8 @@ OFFLINE means don't query the API, just redraw the list."
              (apply 'format "[%s: %s]"
                     (if ytdious-channel
                         (list "CHAN"
-                              (assoc-default 'author
-                                             (seq-first ytdious-videos)))
+                              (alist-get 'author
+                                         (seq-first ytdious-videos)))
                       (list "SRCH" title)))
              'face 'ytdious-video-published-face))
            (new-buffer-name (format "*ytdious %s*" title-string)))
@@ -310,10 +310,10 @@ OFFLINE means don't query the API, just redraw the list."
                                 (numberp (string-match-p ":" elem)))
                               query-words)))
     (setq ytdious-search-term
-          (string-join (assoc-default nil terms) " "))
+          (string-join (alist-get nil terms) " "))
     (if-let ((date (seq-find
                     (lambda (s) (string-prefix-p "date:" s) )
-                    (assoc-default t terms))))
+                    (alist-get t terms))))
         (setq ytdious-date-criterion (intern (substring date 5)))
       (setq ytdious-date-criterion 'all)))
   (setq ytdious-channel 'nil)
@@ -338,13 +338,13 @@ Mostly this is useful to return from a channel view back to search overview"
   (interactive)
   (setq ytdious-current-page 1)
   (setq ytdious-channel
-        (assoc-default 'authorId (ytdious-get-current-video)))
+        (alist-get 'authorId (ytdious-get-current-video)))
   (ytdious--draw-buffer))
 
 (defun ytdious-display-full-title ()
   "Print full title in the echo area."
   (interactive)
-  (message "\n%s\n" (assoc-default 'title (ytdious-get-current-video))))
+  (message "\n%s\n" (alist-get 'title (ytdious-get-current-video))))
 
 (defun ytdious-rotate-sort (&optional reverse)
   "Rotate through sort criteria.
@@ -406,7 +406,7 @@ Optional argument REVERSE reverses the direction of the rotation."
   (unless (ytdious-pos-last-line-p)
     (seq-find (lambda (video)
                 (equal (tabulated-list-get-id)
-                       (assoc-default 'videoId video)))
+                       (alist-get 'videoId video)))
               ytdious-videos)))
 
 (defvar ytdious-frame nil)
@@ -447,7 +447,7 @@ buffer even when other exist."
 
 (defun ytdious-video-id-fun (video)
   "Return VIDEO id."
-  (assoc-default 'videoId video))
+  (alist-get 'videoId video))
 
 (defun ytdious--API-call (method args &optional ucid)
   "Perform a call to the Invidious API method METHOD passing ARGS.
