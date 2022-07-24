@@ -445,10 +445,6 @@ buffer even when other exist."
   (interactive "P")
   (funcall ytdious-enter-buffer-function (ytdious-buffer new)))
 
-(defun ytdious-video-id-fun (video)
-  "Return VIDEO id."
-  (alist-get 'videoId video))
-
 (defun ytdious--API-call (method args &optional ucid)
   "Perform a call to the Invidious API method METHOD passing ARGS.
 Curl is used to perform the request.  An error is thrown if it
