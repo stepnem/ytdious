@@ -301,9 +301,13 @@ OFFLINE means don't query the API, just redraw the list."
   "Show YouTube channel STRING."
   (ytdious--API-call "channels/videos" nil string))
 
+(defvar ytdious-search-history nil
+  "History list of `ytdious' searches.")
+
 (defun ytdious-search (query)
   "Search YouTube for QUERY, and redraw the buffer."
-  (interactive "sSearch terms: ")
+  (interactive (list (read-string "Search terms: " nil
+				  'ytdious-search-history)))
   (setq ytdious-current-page 1)
   (let* ((query-words (split-string query))
          (terms (seq-group-by (lambda (elem)
@@ -324,11 +328,15 @@ OFFLINE means don't query the API, just redraw the list."
 Mostly this is useful to return from a channel view back to search overview"
   (interactive)
   (ytdious-search
-   (read-from-minibuffer "Search terms: " ytdious-search-term)))
+   (read-string "Search terms: " ytdious-search-term
+		nil nil 'ytdious-search-history)))
+
+(defvar ytdious-channel-history nil
+  "History list of channels searched in `ytdious'.")
 
 (defun ytdious-view-channel (channel)
   "Open YouTube CHANNEL, and redraw the buffer."
-  (interactive "sChannel: ")
+  (interactive (list (read-string "Channel: " nil 'ytdious-channel-history)))
   (setq ytdious-current-page 1)
   (setq ytdious-channel channel)
   (ytdious--draw-buffer))
