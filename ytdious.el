@@ -74,6 +74,18 @@ See `format-time-string' for information on how to edit this variable.")
 (defvar-local ytdious-channel ""
   "Current channel as used by `ytdious-search'.")
 
+(defvar ytdious-frame nil)
+(defvar ytdious-enter-buffer-function #'ytdious-pop-up-frame)
+(defun ytdious-pop-up-frame (buffer)
+  "Switch to BUFFER in `ytdious-frame'."
+  (select-frame (if (frame-live-p ytdious-frame)
+                    ytdious-frame
+                  (setq ytdious-frame
+                        (make-frame '((name . "Emacs ytdious")
+                                      (title . "ytdious"))))))
+  (switch-to-buffer buffer)
+  (set-window-dedicated-p nil t))
+
 (defvar ytdious-author-name-reserved-space 20
   "Number of characters reserved for channel names in the *ytdious* buffer.
 Note that there will always 3 extra spaces for eventual dots (for
@@ -282,6 +294,18 @@ OFFLINE means don't query the API, just redraw the list."
   (setq ytdious-channel nil)
   (ytdious--draw-buffer))
 
+;;;###autoload
+(defun ytdious-search-region ()
+  "Search YouTube for marked region."
+  (interactive)
+  (let* ((query
+          (buffer-substring-no-properties
+           (region-beginning)
+           (region-end)))
+         (ytdious-search-term query))
+    (funcall ytdious-enter-buffer-function (ytdious-buffer))
+    (ytdious-search query)))
+
 (defun ytdious-search-recent ()
   "Start a search YouTube with recent search string.
 Mostly this is useful to return from a channel view back to search overview"
@@ -342,20 +366,6 @@ Optional argument REVERSE reverses the direction of the rotation."
   (interactive)
   (ytdious-rotate-date t))
 
-;;;###autoload
-(defun ytdious-region-search ()
-  "Search YouTube for marked region."
-  (interactive)
-  (let* ((query
-          (buffer-substring-no-properties
-           (region-beginning)
-           (region-end)))
-         (ytdious-search-term query))
-    (switch-to-buffer (ytdious-buffer))
-    (unless (eq major-mode 'ytdious-mode)
-      (ytdious-mode))
-    (ytdious-search query)))
-
 (defun ytdious-search-next-page ()
   "Switch to the next page of the current search.  Redraw the buffer."
   (interactive)
@@ -375,18 +385,6 @@ Optional argument REVERSE reverses the direction of the rotation."
     (cl-find id ytdious-videos
 	     :test #'string=
 	     :key (lambda (video) (alist-get 'videoId video)))))
-
-(defvar ytdious-frame nil)
-(defvar ytdious-enter-buffer-function #'ytdious-pop-up-frame)
-(defun ytdious-pop-up-frame (buffer)
-  "Switch to BUFFER in `ytdious-frame'."
-  (select-frame (if (frame-live-p ytdious-frame)
-                    ytdious-frame
-                  (setq ytdious-frame
-                        (make-frame '((name . "Emacs ytdious")
-                                      (title . "ytdious"))))))
-  (switch-to-buffer buffer)
-  (set-window-dedicated-p nil t))
 
 (defun ytdious-buffer (&optional new)
   "Return an existing or new (with NEW non-nil) `ytdious' buffer."
