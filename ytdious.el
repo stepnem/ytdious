@@ -173,10 +173,6 @@ Key bindings:
         (not ytdious-sort-reverse))
   (ytdious--draw-buffer t))
 
-(defun ytdious-pos-last-line-p ()
-  "Check if cursor is in last empty line."
-  (> (line-number-at-pos) (length ytdious-videos)))
-
 (declare-function emms-play-url "emms-source-file")
 (defun ytdious-play-emms ()
   "Play video at point in emms."
@@ -414,11 +410,10 @@ Optional argument REVERSE reverses the direction of the rotation."
 
 (defun ytdious-get-current-video ()
   "Get the currently selected video."
-  (unless (ytdious-pos-last-line-p)
-    (seq-find (lambda (video)
-                (equal (tabulated-list-get-id)
-                       (alist-get 'videoId video)))
-              ytdious-videos)))
+  (when-let ((id (tabulated-list-get-id)))
+    (cl-find id ytdious-videos
+	     :test #'string=
+	     :key (lambda (video) (alist-get 'videoId video)))))
 
 (defvar ytdious-frame nil)
 (defvar ytdious-enter-buffer-function #'ytdious-pop-up-frame)
