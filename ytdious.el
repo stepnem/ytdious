@@ -453,10 +453,10 @@ buffer even when other exist."
 
 (defun ytdious--API-call (method args &optional ucid)
   "Perform a call to the Invidious API method METHOD passing ARGS.
-Curl is used to perform the request.  An error is thrown if it
-exits with a non zero exit code otherwise the request body is
-parsed by `json-read' and returned.  Optional argument UCID of
-the channel which video you want to see."
+curl(1) is used to perform the request.  An error is signaled if it
+exits with a non-zero exit code, otherwise the request body is
+parsed by `json-read' and returned.  Optional argument UCID specifies
+the channel to search."
   (with-temp-buffer
     (let ((exit-code
            (call-process
