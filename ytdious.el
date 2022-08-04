@@ -309,7 +309,7 @@ OFFLINE means don't query the API, just redraw the list."
 				  'ytdious-search-history)))
   (setq ytdious-current-page 1)
   (setq ytdious-search-term query)
-  (setq ytdious-channel 'nil)
+  (setq ytdious-channel nil)
   (ytdious--draw-buffer))
 
 (defun ytdious-search-recent ()
