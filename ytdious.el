@@ -5,7 +5,7 @@
 ;;         Štěpán Němec <stepnem@gmail.com>
 ;; Maintainer: Štěpán Němec <stepnem@gmail.com>
 ;; Version: 0.2b
-;; Keywords: youtube matching multimedia
+;; Keywords: comm multimedia youtube
 ;; URL: https://github.com/stepnem/ytdious
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; Package-Requires: ((emacs "25.1"))
