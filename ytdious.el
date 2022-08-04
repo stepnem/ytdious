@@ -204,7 +204,6 @@ See `revert-buffer' for meaning of IGNORE-AUTO and NOCONFIRM."
 (defun ytdious--draw-buffer (&optional offline)
   "Draw a list of videos.
 OFFLINE means don't query the API, just redraw the list."
-  (interactive)
   (let ((title (or ytdious-channel ytdious-search-term)))
     (setq tabulated-list-format
           `[("Date" 10 t)
