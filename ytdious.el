@@ -48,9 +48,9 @@ The instance must support the Invidious API.  A list of
 available instances can be found at the URL
 `https://api.invidious.io/?sort_by=api'.")
 
-(defvar ytdious-invidious-default-query-fields
-  "author,lengthSeconds,title,videoId,authorId,viewCount,published"
-  "Default fields of interest for video search.")
+(defvar ytdious-fields
+  "author,authorID,lengthSeconds,published,title,videoId,viewCount"
+  "Fields of interest for video search.")
 
 (defvar-local ytdious-videos nil
   "List of videos currently on display.")
@@ -274,8 +274,7 @@ OFFLINE means don't query the API, just redraw the list."
    `(("q" ,string)
      ("date" ,ytdious-date-criterion)
      ("sort_by" ,ytdious-sort-criterion)
-     ("page" ,ytdious-current-page)
-     ("fields" ,ytdious-invidious-default-query-fields))))
+     ("page" ,ytdious-current-page))))
 
 (defun ytdious--query-channel (string)
   "Show YouTube channel STRING."
@@ -417,8 +416,7 @@ exits with a non-zero exit code, otherwise the request body is
 parsed by `json-read' and returned.  Optional argument UCID specifies
 the channel to search."
   (with-temp-buffer
-    (let* ((fields-param
-	    "fields=author,lengthSeconds,published,title,viewCount,videoId")
+    (let* ((fields-param (concat "fields=" ytdious-fields))
 	   (exit-code
             (call-process
              "curl" nil t nil
