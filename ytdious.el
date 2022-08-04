@@ -1,21 +1,4 @@
-;;; ytdious.el --- Query / Preview YouTube via Invidious -*- lexical-binding: t; -*-
-
-;; This file is NOT part of Emacs.
-
-;; This  program is  free  software; you  can  redistribute it  and/or
-;; modify it  under the  terms of  the GNU  General Public  License as
-;; published by the Free Software  Foundation; either version 3 of the
-;; License, or (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful, but
-;; WITHOUT  ANY  WARRANTY;  without   even  the  implied  warranty  of
-;; MERCHANTABILITY or FITNESS  FOR A PARTICULAR PURPOSE.   See the GNU
-;; General Public License for more details.
-
-;; You should have  received a copy of the GNU  General Public License
-;; along  with  this program;  if  not,  write  to the  Free  Software
-;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-;; USA
+;;; ytdious.el --- browse YouTube via Invidious -*- lexical-binding: t; -*-
 
 ;; Author: Stefan Huchler
 ;;         Gabriele Rastello
@@ -23,24 +6,17 @@
 ;; Maintainer: Štěpán Němec <stepnem@gmail.com>
 ;; Version: 0.2b
 ;; Keywords: youtube matching multimedia
-;; URL: https://github.com/spiderbit/ytdious
-;; License: GNU General Public License >= 3
-;; Package-Requires: ((emacs "27.1"))
+;; URL: https://github.com/stepnem/ytdious
+;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Package-Requires: ((emacs "25.1"))
+;; Tested-with: GNU Emacs master branch
 
 ;;; Commentary:
 
-;; This package provide a major mode to search YouTube videos via a
-;; tabulated list and allows to open multiple search buffers at the
-;; same time, it comes with features like thumbnail pictures and
-;; sorting / limiting by time periods.  Visit README for more
-;; information.
-;;
-;; ytdious is based/forked on/from ytel but ads some nice features to
-;; make it more usable for browsing and binge watching.  (more here:
-;; https://github.com/gRastello/ytel).
-;;
-;; ytdious works by querying YouTube via the Invidious APIs (learn
-;; more on that here: https://github.com/omarroth/invidious).
+;; This package provides means to search and view YouTube media via
+;; the Invidious API: https://docs.invidious.io/
+
+;; Corrections and constructive feedback appreciated.
 
 ;;; Code:
 
