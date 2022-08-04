@@ -243,11 +243,11 @@ OFFLINE means don't query the API, just redraw the list."
     (unless offline
       (setq ytdious-videos
             (funcall
-             (if ytdious-channel 'ytdious--query-channel 'ytdious--query)
+             (if ytdious-channel #'ytdious--query-channel #'ytdious--query)
              title)))
     (let* ((title-string
             (propertize
-             (apply 'format "[%s: %s]"
+             (apply #'format "[%s: %s]"
                     (if ytdious-channel
                         (list "CHAN"
                               (alist-get 'author
@@ -358,7 +358,7 @@ Mostly this is useful to return from a channel view back to search overview"
 Optional argument REVERSE reverses the direction of the rotation."
   (interactive)
   (setq ytdious-sort-criterion
-        (funcall (if reverse 'ring-previous 'ring-next)
+        (funcall (if reverse #'ring-previous #'ring-next)
                  ytdious-sort-options ytdious-sort-criterion))
   (ytdious--draw-buffer))
 
@@ -372,7 +372,7 @@ Optional argument REVERSE reverses the direction of the rotation."
 Optional argument REVERSE reverses the direction of the rotation."
   (interactive)
   (setq ytdious-date-criterion
-        (funcall (if reverse 'ring-previous 'ring-next)
+        (funcall (if reverse #'ring-previous #'ring-next)
                  ytdious-date-options ytdious-date-criterion))
   (ytdious--draw-buffer))
 
