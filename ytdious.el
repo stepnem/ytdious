@@ -152,10 +152,17 @@ names that are too long).")
     map)
   "Keymap for `ytdious-mode'.")
 
+(defvar-local ytdious-mode-line-info nil
+  "Construct prepended to `mode-line-misc-info' in `ytdious-mode' buffers.")
 (define-derived-mode ytdious-mode tabulated-list-mode "ytdious"
   "Major Mode for ytdious.
 Key bindings:
 \\{ytdious-mode-map}"
+  (setq-local mode-line-misc-info
+	      (cons '(ytdious-mode-line-info
+		      (:propertize ytdious-mode-line-info
+		       face mode-line-buffer-id))
+		    mode-line-misc-info))
   (setq-local split-height-threshold 22)
   (setq-local revert-buffer-function #'ytdious--revert-buffer))
 
@@ -230,16 +237,7 @@ See `revert-buffer' for meaning of IGNORE-AUTO and NOCONFIRM."
   "Draw a list of videos.
 OFFLINE means don't query the API, just redraw the list."
   (interactive)
-  (let* ((title (or ytdious-channel ytdious-search-term))
-         (page-number (propertize (number-to-string ytdious-current-page)
-                                  'face 'ytdious-video-published-face))
-         (date-limit (propertize (symbol-name ytdious-date-criterion)
-                                 'face 'ytdious-video-published-face))
-         (sort-strings '(upload_date "date" view_count "views"
-                         rating "rating" relevance "relevance"))
-         (sort-limit
-          (propertize (plist-get sort-strings ytdious-sort-criterion)
-                      'face 'ytdious-video-published-face)))
+  (let ((title (or ytdious-channel ytdious-search-term)))
     (setq tabulated-list-format
           `[("Date" 10 t)
             ("Author" ,ytdious-author-name-reserved-space t)
@@ -264,9 +262,14 @@ OFFLINE means don't query the API, just redraw the list."
       (if (get-buffer new-buffer-name)
           (switch-to-buffer (get-buffer-create new-buffer-name))
         (rename-buffer new-buffer-name)))
-    (setq-local mode-line-misc-info `(("page:" ,page-number)
-                                      (" date:" ,date-limit)
-                                      (" sort:" ,sort-limit)))
+    (setq ytdious-mode-line-info
+	  (concat "page:" (number-to-string ytdious-current-page)
+		  " date:" (symbol-name ytdious-date-criterion)
+		  " sort:" (pcase ytdious-sort-criterion
+			     ('upload_date "date")
+			     ('view_count "views")
+			     (_ (symbol-name ytdious-sort-criterion)))
+		  " "))
     (setq tabulated-list-entries
           (cl-loop for video across (if ytdious-sort-reverse
 					(reverse ytdious-videos)
