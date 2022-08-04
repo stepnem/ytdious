@@ -80,7 +80,7 @@ available instances can be found at the URL
   "author,lengthSeconds,title,videoId,authorId,viewCount,published"
   "Default fields of interest for video search.")
 
-(defvar-local ytdious-videos '()
+(defvar-local ytdious-videos nil
   "List of videos currently on display.")
 
 (defvar ytdious-published-date-time-string "%Y-%m-%d"
