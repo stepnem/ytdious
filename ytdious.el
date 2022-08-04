@@ -46,7 +46,6 @@
 
 (require 'cl-lib)
 (require 'json)
-(require 'seq)
 (require 'ring)
 
 (defgroup ytdious ()
@@ -249,9 +248,7 @@ OFFLINE means don't query the API, just redraw the list."
             (propertize
              (apply #'format "[%s: %s]"
                     (if ytdious-channel
-                        (list "CHAN"
-                              (alist-get 'author
-                                         (seq-first ytdious-videos)))
+                        (list "CHAN" (alist-get 'author (elt ytdious-videos 0)))
                       (list "SRCH" title)))
              'face 'ytdious-video-published-face))
            (new-buffer-name (format "*ytdious %s*" title-string)))
