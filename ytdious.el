@@ -308,17 +308,7 @@ OFFLINE means don't query the API, just redraw the list."
   (interactive (list (read-string "Search terms: " nil
 				  'ytdious-search-history)))
   (setq ytdious-current-page 1)
-  (let* ((query-words (split-string query))
-         (terms (seq-group-by (lambda (elem)
-                                (numberp (string-match-p ":" elem)))
-                              query-words)))
-    (setq ytdious-search-term
-          (string-join (alist-get nil terms) " "))
-    (if-let ((date (seq-find
-                    (lambda (s) (string-prefix-p "date:" s) )
-                    (alist-get t terms))))
-        (setq ytdious-date-criterion (intern (substring date 5)))
-      (setq ytdious-date-criterion 'all)))
+  (setq ytdious-search-term query)
   (setq ytdious-channel 'nil)
   (ytdious--draw-buffer))
 
