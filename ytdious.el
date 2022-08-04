@@ -127,7 +127,7 @@ names that are too long).")
 (defvar-local ytdious-mode-line-info nil
   "Construct prepended to `mode-line-misc-info' in `ytdious-mode' buffers.")
 (define-derived-mode ytdious-mode tabulated-list-mode "ytdious"
-  "Major Mode for ytdious.
+  "Major Mode for `ytdious'.
 Key bindings:
 \\{ytdious-mode-map}"
   (setq-local mode-line-misc-info
@@ -387,7 +387,7 @@ Optional argument REVERSE reverses the direction of the rotation."
   (set-window-dedicated-p nil t))
 
 (defun ytdious-buffer (&optional new)
-  "Return an existing or new (with NEW non-nil) ytdious buffer."
+  "Return an existing or new (with NEW non-nil) `ytdious' buffer."
   (cl-flet ((new-buffer ()
               (with-current-buffer (generate-new-buffer "*ytdious*")
                 (ytdious-mode)
@@ -405,7 +405,7 @@ Optional argument REVERSE reverses the direction of the rotation."
 ;;;###autoload
 (defun ytdious (&optional new)
   "Enter ytdious.
-With NEW (interactively, with a prefix argument), create new ytdious
+With NEW (interactively, with a prefix argument), create new `ytdious'
 buffer even when other exist."
   (interactive "P")
   (funcall ytdious-enter-buffer-function (ytdious-buffer new)))
