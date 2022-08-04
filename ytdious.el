@@ -49,8 +49,8 @@
 (require 'ring)
 
 (defgroup ytdious ()
-  "An Emacs YouTube \"front-end\"."
-  :group 'comm)
+  "Emacs front-end to Invidious API."
+  :group 'multimedia)
 
 (defvar ytdious-sort-options (ring-convert-sequence-to-ring
                               '(relevance rating upload_date view_count))
