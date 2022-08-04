@@ -295,14 +295,14 @@ Mostly this is useful to return from a channel view back to search overview"
 
 ;;;###autoload
 (defun ytdious-view-channel (channel)
-  "Open YouTube CHANNEL, and redraw the buffer."
+  "Browse YouTube channel CHANNEL."
   (interactive (list (read-string "Channel: " nil 'ytdious-channel-history)))
   (setq ytdious-current-page 1)
   (setq ytdious-channel channel)
   (ytdious--draw-buffer))
 
 (defun ytdious-view-channel-at-point ()
-  "Open YouTube CHANNEL, and redraw the buffer."
+  "Browse YouTube channel of the author of video at point."
   (interactive)
   (setq ytdious-current-page 1)
   (setq ytdious-channel
