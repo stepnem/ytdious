@@ -86,15 +86,11 @@ See `format-time-string' for information on how to edit this variable.")
   (switch-to-buffer buffer)
   (set-window-dedicated-p nil t))
 
-(defvar ytdious-author-name-reserved-space 20
-  "Number of characters reserved for channel names in the *ytdious* buffer.
-Note that there will always 3 extra spaces for eventual dots (for
-names that are too long).")
+(defvar ytdious-video-author-width 20
+  "Column width reserved for channel names in `ytdious' buffers.")
 
-(defvar ytdious-title-video-reserved-space 100
-  "Number of characters reserved for the video title in the *ytdious* buffer.
-Note that there will always 3 extra spaces for eventual dots (for
-names that are too long).")
+(defvar ytdious-video-title-width 100
+  "Column width reserved for the video title in `ytdious' buffers.")
 
 (defface ytdious-video-published-face
   '((((class color) (background light)) (:foreground "#a0a"))
@@ -219,9 +215,9 @@ OFFLINE means don't query the API, just redraw the list."
   (let ((title (or ytdious-channel ytdious-search-term)))
     (setq tabulated-list-format
           `[("Date" 10 t)
-            ("Author" ,ytdious-author-name-reserved-space t)
+            ("Author" ,ytdious-video-author-width t)
             ("Length" 8 t)
-	    ("Title" ,ytdious-title-video-reserved-space t)
+	    ("Title" ,ytdious-video-title-width t)
             ("Views" 10 nil . (:right-align t))])
     (unless offline
       (setq ytdious-videos
