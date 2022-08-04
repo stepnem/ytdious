@@ -30,7 +30,7 @@
   "Available sort options.")
 
 (defvar-local ytdious-sort-reverse nil
-  "Toggle for sorting videos descending/ascending.")
+  "Non-nil means sort videos in reverse order.")
 
 (defvar ytdious-player-program "mpv"
   "Program for playing videos.")
@@ -135,9 +135,7 @@ See `format-time-string' for information on how to edit this variable.")
 (defvar-local ytdious-mode-line-info nil
   "Construct prepended to `mode-line-misc-info' in `ytdious-mode' buffers.")
 (define-derived-mode ytdious-mode tabulated-list-mode "ytdious"
-  "Major Mode for `ytdious'.
-Key bindings:
-\\{ytdious-mode-map}"
+  "Major mode for `ytdious' buffers."
   (setq-local mode-line-misc-info
 	      (cons '(ytdious-mode-line-info
 		      (:propertize ytdious-mode-line-info
@@ -147,7 +145,7 @@ Key bindings:
   (setq-local revert-buffer-function #'ytdious--revert-buffer))
 
 (defun ytdious-toggle-sort-direction ()
-  "Toggle sorting of the video list."
+  "Toggle reverse sorting of the video list."
   (interactive)
   (setq ytdious-sort-reverse
         (not ytdious-sort-reverse))
@@ -155,7 +153,7 @@ Key bindings:
 
 (declare-function emms-play-url "emms-source-file")
 (defun ytdious-play-emms ()
-  "Play video at point in emms."
+  "Play video at point in `emms'."
   (emms-play-url (concat ytdious-invidious-api-url
                          "/watch?v="
                          (tabulated-list-get-id))))
@@ -182,11 +180,11 @@ The URL is also displayed in the echo area."
     (message "%s" url)))
 
 (defun ytdious--format-author (name)
-  "Format a channel NAME to be inserted in the *ytdious* buffer."
+  "Format a channel NAME to be inserted in the `ytdious' buffer."
   (propertize name 'face 'ytdious-channel-name-face))
 
 (defun ytdious--format-video-length (seconds)
-  "Format SECONDS to be inserted in the *ytdious* buffer."
+  "Format SECONDS to be inserted in the `ytdious' buffer."
   (let ((formatted-string (concat (format-seconds "%.2h" seconds)
                                   ":"
                                   (format-seconds "%.2m" (mod seconds 3600))
@@ -195,11 +193,11 @@ The URL is also displayed in the echo area."
     (propertize formatted-string 'face 'ytdious-video-length-face)))
 
 (defun ytdious--format-video-views (views)
-  "Format video VIEWS to be inserted in the *ytdious* buffer."
+  "Format video VIEWS to be inserted in the `ytdious' buffer."
   (propertize (number-to-string views) 'face 'ytdious-video-view-face))
 
 (defun ytdious--format-video-published (published)
-  "Format video PUBLISHED date to be inserted in the *ytdious* buffer."
+  "Format video PUBLISHED date to be inserted in the `ytdious' buffer."
   (propertize (format-time-string ytdious-published-date-time-string
                                   (seconds-to-time published))
               'face 'ytdious-video-published-face))
@@ -281,7 +279,7 @@ OFFLINE means don't query the API, just redraw the list."
 
 ;;;###autoload
 (defun ytdious-search (query)
-  "Search YouTube for QUERY, and redraw the buffer."
+  "Search YouTube for QUERY."
   (interactive (list (read-string "Search terms: " nil
 				  'ytdious-search-history)))
   (setq ytdious-current-page 1)
@@ -362,13 +360,13 @@ Optional argument REVERSE reverses the direction of the rotation."
   (ytdious-rotate-date t))
 
 (defun ytdious-search-next-page ()
-  "Switch to the next page of the current search.  Redraw the buffer."
+  "Switch to the next page of the current search."
   (interactive)
   (cl-incf ytdious-current-page)
   (ytdious--draw-buffer))
 
 (defun ytdious-search-previous-page ()
-  "Switch to the previous page of the current search.  Redraw the buffer."
+  "Switch to the previous page of the current search."
   (interactive)
   (when (> ytdious-current-page 1)
     (cl-decf ytdious-current-page)
