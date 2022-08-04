@@ -24,8 +24,9 @@
 (require 'json)
 (require 'ring)
 
-(defvar ytdious-sort-options (ring-convert-sequence-to-ring
-                              '(relevance rating upload_date view_count))
+(defvar ytdious-sort-options
+  (ring-convert-sequence-to-ring
+   '("relevance" "rating" "upload_date" "view_count"))
   "Available sort options.")
 
 (defvar-local ytdious-sort-reverse nil
@@ -38,7 +39,7 @@
   "List of options for `ytdious-player-program'.")
 
 (defvar ytdious-date-options (ring-convert-sequence-to-ring
-                              '(hour today week month year all))
+                              '("hour" "today" "week" "month" "year" "all"))
   "Available date options.")
 
 (defvar ytdious-invidious-api-url "https://invidio.xamh.de"
@@ -58,10 +59,10 @@ available instances can be found at the URL
   "Time-string used to render the published date of the video.
 See `format-time-string' for information on how to edit this variable.")
 
-(defvar-local ytdious-sort-criterion 'relevance
+(defvar-local ytdious-sort-criterion "relevance"
   "Criterion to date limit the results of the search query.")
 
-(defvar-local ytdious-date-criterion 'year
+(defvar-local ytdious-date-criterion "year"
   "Criterion to date limit the results of the search query.")
 
 (defvar-local ytdious-current-page 1
@@ -229,11 +230,11 @@ OFFLINE means don't query the API, just redraw the list."
         (rename-buffer new-buffer-name)))
     (setq ytdious-mode-line-info
 	  (concat "page:" (number-to-string ytdious-current-page)
-		  " date:" (symbol-name ytdious-date-criterion)
+		  " date:" ytdious-date-criterion
 		  " sort:" (pcase ytdious-sort-criterion
-			     ('upload_date "date")
-			     ('view_count "views")
-			     (_ (symbol-name ytdious-sort-criterion)))
+			     ("upload_date" "date")
+			     ("view_count" "views")
+			     (_ ytdious-sort-criterion))
 		  " "))
     (setq tabulated-list-entries
           (cl-loop for video across (if ytdious-sort-reverse
@@ -260,8 +261,8 @@ OFFLINE means don't query the API, just redraw the list."
   (ytdious--API-call
    "search"
    `(("q" ,string)
-     ("date" ,(symbol-name ytdious-date-criterion))
-     ("sort_by" ,(symbol-name ytdious-sort-criterion))
+     ("date" ,ytdious-date-criterion)
+     ("sort_by" ,ytdious-sort-criterion)
      ("page" ,ytdious-current-page)
      ("fields" ,ytdious-invidious-default-query-fields))))
 
