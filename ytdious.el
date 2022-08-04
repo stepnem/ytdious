@@ -445,16 +445,21 @@ exits with a non-zero exit code, otherwise the request body is
 parsed by `json-read' and returned.  Optional argument UCID specifies
 the channel to search."
   (with-temp-buffer
-    (let ((exit-code
-           (call-process
-            "curl" nil t nil
-            "--silent"
-            "-X" "GET"
-            (concat ytdious-invidious-api-url
-                    "/api/v1/"
-                    method
-                    (when ucid (format "/%s%s" ucid "?sort_by=newest"))
-                    (when args (concat "?" (url-build-query-string args)))))))
+    (let* ((fields-param
+	    "fields=author,lengthSeconds,published,title,viewCount,videoId")
+	   (exit-code
+            (call-process
+             "curl" nil t nil
+             "--silent"
+             "-X" "GET"
+             (concat
+	      ytdious-invidious-api-url
+              "/api/v1/"
+              method
+              (if ucid (concat "/" ucid "?sort_by=newest&" fields-param)
+                (concat "?" fields-param
+			(when args
+			  (concat "&" (url-build-query-string args)))))))))
       (unless (= exit-code 0)
         (error "Curl exited with code %d when querying Invidious" exit-code))
       (goto-char (point-min))
