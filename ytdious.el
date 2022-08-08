@@ -277,7 +277,7 @@ OFFLINE means don't query the API, just redraw the list."
 (defun ytdious-search (query)
   "Search YouTube for QUERY."
   (interactive (list (read-string "Search terms: " nil
-				  'ytdious-search-history)))
+				  'ytdious-search-history nil t)))
   (setq ytdious-current-page 1)
   (setq ytdious-search-term query)
   (setq ytdious-channel nil)
@@ -301,7 +301,7 @@ Mostly this is useful to return from a channel view back to search overview"
   (interactive)
   (ytdious-search
    (read-string "Search terms: " ytdious-search-term
-		nil nil 'ytdious-search-history)))
+		'ytdious-search-history nil t)))
 
 (defvar ytdious-channel-history nil
   "History list of channels searched in `ytdious'.")
