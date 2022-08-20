@@ -401,7 +401,7 @@ buffer even when other exist."
   (interactive "P")
   (funcall ytdious-enter-buffer-function (ytdious-buffer new)))
 
-(defun ytdious--API-call (method args &optional ucid)
+(defun ytdious--API-call (method &optional args ucid)
   "Perform a call to the Invidious API method METHOD passing ARGS.
 curl(1) is used to perform the request.  An error is signaled if it
 exits with a non-zero exit code, otherwise the request body is
