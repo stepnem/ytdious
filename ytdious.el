@@ -138,6 +138,8 @@ See `format-time-string' for information on how to edit this variable.")
   (define-key map "w" #'ytdious-copy-url-at-point)
   (define-key map ">" #'ytdious-search-next-page)
   (define-key map "<" #'ytdious-search-previous-page)
+  (define-key map "]" #'ytdious-search-next-page)
+  (define-key map "[" #'ytdious-search-previous-page)
   (define-key map (kbd "RET") #'ytdious-play))
 
 (defun ytdious-toggle-sort-direction ()
