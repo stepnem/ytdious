@@ -140,7 +140,8 @@ See `format-time-string' for information on how to edit this variable.")
   (define-key map "<" #'ytdious-search-previous-page)
   (define-key map "]" #'ytdious-search-next-page)
   (define-key map "[" #'ytdious-search-previous-page)
-  (define-key map (kbd "RET") #'ytdious-play))
+  (define-key map (kbd "RET") #'ytdious-play)
+  (define-key map "e" #'ytdious-play-emms))
 
 (defun ytdious-toggle-sort-direction ()
   "Toggle reverse sorting of the video list."
@@ -151,7 +152,8 @@ See `format-time-string' for information on how to edit this variable.")
 
 (declare-function emms-play-url "emms-source-file")
 (defun ytdious-play-emms ()
-  "Play video at point in `emms'."
+  "Call `emms-play-url' on URL of video at point."
+  (interactive)
   (emms-play-url (concat ytdious-invidious-api-url
                          "/watch?v="
                          (tabulated-list-get-id))))
