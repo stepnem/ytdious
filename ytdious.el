@@ -261,8 +261,9 @@ OFFLINE means don't query the API, just redraw the list."
 
 (defun ytdious--query (string)
   "Query YouTube for STRING."
-  (ytdious--API-call
+  (ytdious-api
    "search"
+   :params
    `(("q" ,string)
      ("date" ,ytdious-date-criterion)
      ("sort_by" ,ytdious-sort-criterion)
@@ -270,7 +271,7 @@ OFFLINE means don't query the API, just redraw the list."
 
 (defun ytdious--query-channel (string)
   "Show YouTube channel STRING."
-  (ytdious--API-call "channels/videos" nil string))
+  (ytdious-api (concat "channels/videos/" string)))
 
 (defvar ytdious-search-history nil
   "History list of `ytdious' searches.")
@@ -401,27 +402,25 @@ buffer even when other exist."
   (interactive "P")
   (funcall ytdious-enter-buffer-function (ytdious-buffer new)))
 
-(defun ytdious--API-call (method &optional args ucid)
-  "Perform a call to the Invidious API method METHOD passing ARGS.
-curl(1) is used to perform the request.  An error is signaled if it
-exits with a non-zero exit code, otherwise the request body is
-parsed by `json-read' and returned.  Optional argument UCID specifies
-the channel to search."
+(cl-defun ytdious-api (path &key fields params)
+  "Perform a call to the Invidious API.
+PATH is the query URL path (without the leading and trailing
+slash).  PARAMS is a URL parameter alist passed to
+`url-build-query-string'.  FIELDS can override `ytdious-fields'.
+curl(1) is used to perform the request.  An error is signaled if
+it exits with a non-zero exit code, otherwise the request body is
+parsed by `json-read' and returned."
   (with-temp-buffer
-    (let* ((fields-param (concat "fields=" ytdious-fields))
-	   (exit-code
-            (call-process
-             "curl" nil t nil
-             "--silent"
-             "-X" "GET"
-             (concat
-	      ytdious-invidious-api-url
-              "/api/v1/"
-              method
-              (if ucid (concat "/" ucid "?sort_by=newest&" fields-param)
-                (concat "?" fields-param
-			(when args
-			  (concat "&" (url-build-query-string args)))))))))
+    (let ((exit-code
+           (call-process
+            "curl" nil t nil
+            "--silent"
+            "-X" "GET"
+            (concat
+	     ytdious-invidious-api-url "/api/v1/" path
+             (concat "?" (concat "fields=" (or fields ytdious-fields))
+		     (when params
+		       (concat "&" (url-build-query-string params))))))))
       (unless (= exit-code 0)
         (error "Curl exited with code %d when querying Invidious" exit-code))
       (goto-char (point-min))
