@@ -416,6 +416,7 @@ parsed by `json-read' and returned."
     (let ((exit-code
            (call-process
             "curl" nil t nil
+	    "-L"
             "--silent"
             "-X" "GET"
             (concat
